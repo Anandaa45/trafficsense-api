@@ -2,8 +2,12 @@ from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 import shutil
 import os
+import tempfile
+from dotenv import load_dotenv
 from services.detection import process_traffic_video, process_traffic_image
 from services.advisor import get_traffic_advice
+
+load_dotenv()
 
 app = FastAPI(title="TrafficSense API")
 
@@ -15,7 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-GEMINI_API_KEY = "GANTI PAKE KODE API PUNYAMU SENDIRI"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
 @app.get("/")
 def read_root():
@@ -26,9 +30,10 @@ async def analyze_traffic(
     file: UploadFile = File(...),
     line_y: int = Form(None)
 ):
-    temp_path = f"temp_{file.filename}"
-    with open(temp_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    suffix = os.path.splitext(file.filename or "")[1]
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
+        temp_path = temp_file.name
+        shutil.copyfileobj(file.file, temp_file)
         
     try:
         content_type = file.content_type

@@ -5,3 +5,5 @@ opencv-python-headless
 numpy
 ultralytics
 tensorflow
+google-genai
+python-dotenv
