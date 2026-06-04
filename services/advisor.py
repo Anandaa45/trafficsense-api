@@ -1,4 +1,7 @@
-from google import genai
+try:
+    from google import genai
+except ImportError:
+    genai = None
 
 def get_fallback_advice(total_kendaraan, status):
     """Fungsi ini berjalan jika Gemini API gagal atau kuota habis."""
@@ -10,7 +13,7 @@ def get_fallback_advice(total_kendaraan, status):
         return f"Kondisi lalu lintas terpantau LANCAR dengan {total_kendaraan} kendaraan. Perjalanan Anda diprediksi lancar."
 
 def get_traffic_advice(total_kendaraan, status_kemacetan, api_key):
-    if not api_key or api_key == "ISI_API_KEY_KAMU_DISINI":
+    if genai is None or not api_key or api_key == "ISI_API_KEY_KAMU_DISINI":
         return get_fallback_advice(total_kendaraan, status_kemacetan)
 
     try:

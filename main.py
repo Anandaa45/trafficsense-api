@@ -3,9 +3,15 @@ from fastapi.middleware.cors import CORSMiddleware
 import shutil
 import os
 import tempfile
-from dotenv import load_dotenv
 from services.detection import process_traffic_video, process_traffic_image
 from services.advisor import get_traffic_advice
+
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    def load_dotenv():
+        return False
+
 
 load_dotenv()
 
